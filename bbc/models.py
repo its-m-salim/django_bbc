@@ -37,7 +37,9 @@ class Articles(models.Model):
             ("submit_article", "Can submit article"),
             ("review_article", "Can review pending articles"),
             ("publish_article", "Can publish article"),
-            ("remove_article", "Can delete any article")
+            ("remove_article", "Can delete any article"),
+            ("reject_article", "Can reject reviewed articles"),
+            ("approve_article", "Can approve any reviewed articles")
         ]
 
 
