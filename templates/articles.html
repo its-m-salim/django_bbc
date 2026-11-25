@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Лента новостей{% endblock %}
+
+{% block content %}
+
+<form class="filter" method="get" action="{% url 'articles' %}">
+    <input class="input" type="search" name="q" value="{{ q }}" placeholder="Поиск по новостям">
+    {% if selected_category %}
+        <input type="hidden" name="category" value="{{ selected_category }}">
+    {% endif %}
+    <button class="btn" type="submit">Найти</button>
+</form>
+
+<nav class="chips">
+    <a class="chip {% if not selected_category %}chip-active{% endif %}"
+       href="{% url 'articles' %}{% if q %}?q={{ q|urlencode }}{% endif %}">Все</a>
+    {% for c in categories %}
+        <a class="chip {% if c.id == selected_category %}chip-active{% endif %}"
+           href="{% url 'articles' %}?category={{ c.id }}{% if q %}&q={{ q|urlencode }}{% endif %}">{{ c.name }}</a>
+    {% endfor %}
+</nav>
+
+{% if articles %}
+    <section class="feed">
+        {% for a in articles %}
+            <article class="story {% if forloop.first %}story-lead{% endif %}">
+                <div class="story-top">
+                    <span class="tag">{{ a.category.name }}</span>
+                    <span class="meta">{{ a.created_at|date:"d.m.Y, H:i" }}</span>
+                </div>
+
+                <h2 class="story-title">
+                    <a href="{% url 'article_detail' a.id %}">{{ a.title }}</a>
+                </h2>
+
+                <p class="story-text">
+                    {% if forloop.first %}{{ a.content|truncatewords:45 }}{% else %}{{ a.content|truncatewords:22 }}{% endif %}
+                </p>
+
+                <div class="story-bottom">
+                    <span class="meta">{{ a.author.username }}</span>
+                    {# счётчик комментариев виден всем, сами комментарии - только после входа #}
+                    <a class="count" href="{% url 'article_detail' a.id %}" title="Комментарии">
+                        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9l-5 4V5a1 1 0 0 1 1-1z" fill="currentColor"/></svg>
+                        {{ a.comments_count }}
+                    </a>
+                </div>
+            </article>
+        {% endfor %}
+    </section>
+{% else %}
+    <div class="empty">
+        <h2>Ничего не найдено</h2>
+        <p>Попробуйте другой запрос или выберите другую категорию.</p>
+        <a class="btn btn-light" href="{% url 'articles' %}">Сбросить фильтры</a>
+    </div>
+{% endif %}
+
+{% endblock %}

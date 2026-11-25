@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Подтверждение почты{% endblock %}
+
+{% block content %}
+<div class="card narrow">
+    <h1>Подтвердите почту</h1>
+    <p class="muted">Мы отправили 6-значный код на вашу почту. Введите его ниже.</p>
+
+    {% if error %}<p class="alert">{{ error }}</p>{% endif %}
+
+    <form method="post" action="{% url 'verify_email' user_id %}">
+        {% csrf_token %}
+
+        <label class="label" for="code">Код из письма</label>
+        <input class="input input-code" id="code" name="code" type="text"
+               inputmode="numeric" maxlength="6" autocomplete="one-time-code" required>
+
+        <div class="actions">
+            <button class="btn" type="submit">Подтвердить</button>
+        </div>
+    </form>
+
+    <form class="resend" method="post" action="{% url 'resend_code' user_id %}">
+        {% csrf_token %}
+        <span class="muted small">Код не пришёл?</span>
+        <button class="link-btn" type="submit">Отправить ещё раз</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Мои статьи{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <h1>Мои статьи</h1>
+    <a class="btn" href="{% url 'create_article' %}">Написать статью</a>
+</div>
+
+{% if articles %}
+    <ul class="rows">
+        {% for a in articles %}
+            <li class="row">
+                <div class="row-main">
+                    <span class="status status-{{ a.status }}">
+                        {% if a.status == "draft" %}Черновик
+                        {% elif a.status == "pending" %}На проверке
+                        {% elif a.status == "approved" %}Опубликована
+                        {% elif a.status == "rejected" %}Отклонена
+                        {% else %}{{ a.status }}{% endif %}
+                    </span>
+
+                    {% if a.status == "approved" %}
+                        <a class="row-title" href="{% url 'article_detail' a.id %}">{{ a.title }}</a>
+                    {% else %}
+                        <span class="row-title">{{ a.title }}</span>
+                    {% endif %}
+
+                    <span class="meta">{{ a.category.name }}, {{ a.created_at|date:"d.m.Y" }}</span>
+                </div>
+
+                {# править, отправлять и удалять можно только черновик или отклонённую статью #}
+                {% if a.status == "draft" or a.status == "rejected" %}
+                    <div class="row-actions">
+                        {% if perms.bbc.edit_own_article %}
+                            <a class="btn btn-light btn-small" href="{% url 'edit_own_article' a.id %}">Изменить</a>
+                        {% endif %}
+
+                        {% if perms.bbc.submit_article %}
+                            <form class="inline-form" method="post" action="{% url 'submit_own_article' a.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-small" type="submit">На проверку</button>
+                            </form>
+                        {% endif %}
+
+                        <form class="inline-form" method="post" action="{% url 'delete_own_article' a.id %}">
+                            {% csrf_token %}
+                            <button class="btn btn-danger btn-small" type="submit">Удалить</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="empty">
+        <h2>У вас пока нет статей</h2>
+        <p>Напишите первую: она сохранится как черновик.</p>
+        <a class="btn" href="{% url 'create_article' %}">Написать статью</a>
+    </div>
+{% endif %}
+{% endblock %}

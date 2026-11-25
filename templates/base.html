@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Новости{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="wrap header-row">
+        <a class="brand" href="{% url 'home' %}">
+            <span class="brand-mark">N</span>
+            <span class="brand-name">Новости</span>
+        </a>
+
+        <nav class="nav">
+            <a href="{% url 'home' %}">Лента</a>
+
+            {# Ссылки показываются по правам групп. Пока права не выданы - их видит только суперпользователь #}
+            {% if perms.bbc.write_article %}
+                <a href="{% url 'my_articles' %}">Мои статьи</a>
+                <a href="{% url 'create_article' %}">Написать</a>
+            {% endif %}
+            {% if perms.bbc.review_article %}
+                <a href="{% url 'pending_list' %}">На проверке</a>
+            {% endif %}
+        </nav>
+
+        <div class="user-box">
+            {% if user.is_authenticated %}
+                <a class="user-link" href="{% url 'profile' %}">{{ user.username }}</a>
+                <a class="btn btn-light btn-small" href="{% url 'logout' %}">Выйти</a>
+            {% else %}
+                <a class="user-link" href="{% url 'login' %}">Войти</a>
+                <a class="btn btn-small" href="{% url 'registration' %}">Регистрация</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<main class="wrap main">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="wrap">Новости &copy; {% now "Y" %}</div>
+</footer>
+
+</body>
+</html>

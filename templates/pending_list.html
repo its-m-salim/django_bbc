@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Статьи на проверке{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <h1>Статьи на проверке</h1>
+</div>
+
+{% if articles %}
+    <ul class="rows">
+        {% for a in articles %}
+            <li class="row">
+                <div class="row-main">
+                    <a class="row-title" href="{% url 'review_article' a.id %}">{{ a.title }}</a>
+                    <span class="meta">
+                        {{ a.author.username }}, {{ a.category.name }}, {{ a.created_at|date:"d.m.Y H:i" }}
+                    </span>
+                </div>
+                <div class="row-actions">
+                    <a class="btn btn-small" href="{% url 'review_article' a.id %}">Проверить</a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="empty">
+        <h2>Очередь пуста</h2>
+        <p>Новых статей на проверку нет.</p>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Редактирование статьи</h1>
+
+    {% if article.status == "rejected" %}
+        <p class="alert">Статья была отклонена. После сохранения она вернётся в черновики.</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label class="label" for="title">Заголовок</label>
+        <input class="input" id="title" name="title" type="text" value="{{ article.title }}" required>
+
+        <label class="label" for="category">Категория</label>
+        <select class="input" id="category" name="category" required>
+            {% for c in categories %}
+                <option value="{{ c.id }}" {% if c.id == article.category_id %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label class="label" for="content">Текст</label>
+        <textarea class="input input-tall" id="content" name="content" required>{{ article.content }}</textarea>
+
+        <div class="actions">
+            <button class="btn" type="submit">Сохранить</button>
+            <a class="btn btn-light" href="{% url 'my_articles' %}">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

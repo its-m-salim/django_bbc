@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Новый комментарий{% endblock %}
+
+{% block content %}
+<div class="card narrow">
+    <h1>Новый комментарий</h1>
+    <p class="muted">К статье: <a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></p>
+
+    <form method="post">
+        {% csrf_token %}
+        <label class="label" for="text">Текст комментария</label>
+        <textarea class="input" id="text" name="text" rows="5" required></textarea>
+
+        <div class="actions">
+            <button class="btn" type="submit">Отправить</button>
+            <a class="btn btn-light" href="{% url 'article_detail' article.id %}">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

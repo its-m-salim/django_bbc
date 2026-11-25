@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<div class="card profile">
+    <div class="profile-head">
+        <div class="avatar">{{ user.username|slice:":1"|upper }}</div>
+        <div>
+            <h1>{{ user.username }}</h1>
+            <p class="muted">{{ user.email }}</p>
+        </div>
+    </div>
+
+    <dl class="stats">
+        <div class="stat">
+            <dt>Роль</dt>
+            <dd><span class="role role-{{ role }}">{{ role_label }}</span></dd>
+        </div>
+
+        {% if role == "journalist" or role == "editor" %}
+            <div class="stat">
+                <dt>Создано статей</dt>
+                <dd class="num">{{ created_count }}</dd>
+            </div>
+        {% endif %}
+
+        {% if role == "editor" %}
+            <div class="stat">
+                <dt>Опубликовано</dt>
+                <dd class="num">{{ published_count }}</dd>
+            </div>
+        {% endif %}
+    </dl>
+
+    {% if role == "reader" %}
+        <p class="muted small">Читатели могут читать новости и оставлять комментарии.</p>
+    {% endif %}
+
+    <div class="actions">
+        {% if role == "journalist" or role == "editor" %}
+            <a class="btn btn-light" href="{% url 'my_articles' %}">Мои статьи</a>
+        {% endif %}
+        <a class="btn btn-light" href="{% url 'logout' %}">Выйти</a>
+    </div>
+</div>
+{% endblock %}

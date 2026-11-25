@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Проверка: {{ article.title }}{% endblock %}
+
+{% block content %}
+<article class="article">
+    <div class="story-top">
+        <span class="tag">{{ article.category.name }}</span>
+        <span class="status status-pending">На проверке</span>
+    </div>
+
+    <h1 class="article-title">{{ article.title }}</h1>
+    <p class="byline">Автор: {{ article.author.username }}, {{ article.created_at|date:"d.m.Y H:i" }}</p>
+
+    <div class="article-body">
+        {{ article.content|linebreaks }}
+    </div>
+
+    <div class="actions review-actions">
+        {% if perms.bbc.approve_article %}
+            <form class="inline-form" method="post" action="{% url 'approve_article' article.id %}">
+                {% csrf_token %}
+                <button class="btn btn-success" type="submit">Опубликовать</button>
+            </form>
+        {% endif %}
+
+        {% if perms.bbc.reject_article %}
+            <form class="inline-form" method="post" action="{% url 'reject_article' article.id %}">
+                {% csrf_token %}
+                <button class="btn btn-danger" type="submit">Отклонить</button>
+            </form>
+        {% endif %}
+    </div>
+</article>
+
+<p><a class="back" href="{% url 'pending_list' %}">&larr; К списку проверки</a></p>
+{% endblock %}

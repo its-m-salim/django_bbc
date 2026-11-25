@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<article class="article">
+    <div class="story-top">
+        <span class="tag">{{ article.category.name }}</span>
+        <span class="meta">{{ article.created_at|date:"d.m.Y, H:i" }}</span>
+    </div>
+
+    <h1 class="article-title">{{ article.title }}</h1>
+    <p class="byline">Автор: {{ article.author.username }}</p>
+
+    <div class="article-body">
+        {{ article.content|linebreaks }}
+    </div>
+
+    {% if perms.bbc.remove_article %}
+        <form class="inline-form" method="post" action="{% url 'remove_article' article.id %}">
+            {% csrf_token %}
+            <button class="btn btn-danger btn-small" type="submit">Удалить статью</button>
+        </form>
+    {% endif %}
+</article>
+
+<section class="comments" id="comments">
+    <h2>Комментарии <span class="count-inline">{{ article.comments.count }}</span></h2>
+
+    {% if user.is_authenticated %}
+
+        {% if perms.bbc.write_comment %}
+            <form class="comment-form" method="post" action="{% url 'write_comment' article.id %}">
+                {% csrf_token %}
+                <label class="label" for="text">Ваш комментарий</label>
+                <textarea class="input" id="text" name="text" rows="3" required></textarea>
+                <button class="btn" type="submit">Отправить</button>
+            </form>
+        {% endif %}
+
+        {% for c in article.comments.all %}
+            <div class="comment">
+                <div class="comment-head">
+                    <strong>{{ c.author.username }}</strong>
+                    <span class="meta">{{ c.created_at|date:"d.m.Y, H:i" }}</span>
+                </div>
+                <p>{{ c.text|linebreaksbr }}</p>
+
+                {% if perms.bbc.remove_comment %}
+                    <form class="inline-form" method="post" action="{% url 'delete_comment' c.id %}">
+                        {% csrf_token %}
+                        <button class="link-danger" type="submit">Удалить</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p class="muted">Комментариев пока нет. Напишите первый.</p>
+        {% endfor %}
+
+    {% else %}
+        <div class="notice">
+            <p>Читать и писать комментарии могут только зарегистрированные пользователи.</p>
+            <a class="btn" href="{% url 'login' %}">Войти</a>
+            <a class="btn btn-light" href="{% url 'registration' %}">Зарегистрироваться</a>
+        </div>
+    {% endif %}
+</section>
+
+<p><a class="back" href="{% url 'home' %}">&larr; Вернуться в ленту</a></p>
+{% endblock %}
